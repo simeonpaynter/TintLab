@@ -4,291 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TintLab — Design Token Studio</title>
-  <style>
-    :root {
-      --studio-bg: #0f1115;
-      --studio-surface: #181b21;
-      --studio-border: #2a2f3a;
-      --studio-text: #f3f4f6;
-      --studio-muted: #9ca3af;
-      --studio-accent: #6366f1;
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-      /* Dynamic Generated Tokens (Updated by color-picker.js) */
-      --color-brand-50: #eef2ff;
-      --color-brand-100: #e0e7ff;
-      --color-brand-200: #c7d2fe;
-      --color-brand-300: #a5b4fc;
-      --color-brand-400: #818cf8;
-      --color-brand-500: #6366f1;
-      --color-brand-600: #4f46e5;
-      --color-brand-700: #4338ca;
-      --color-brand-800: #3730a3;
-      --color-brand-900: #312e81;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background-color: var(--studio-bg);
-      color: var(--studio-text);
-      font-family: var(--font-sans);
-      line-height: 1.5;
-      padding: 1.5rem;
-    }
-
-    header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      padding-bottom: 1.5rem;
-      border-bottom: 1px solid var(--studio-border);
-      margin-bottom: 2rem;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .brand-dot {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--color-brand-500);
-      box-shadow: 0 0 12px var(--color-brand-500);
-    }
-
-    .brand h1 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      font-size: 0.75rem;
-      color: var(--studio-muted);
-      background: var(--studio-surface);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      border: 1px solid var(--studio-border);
-    }
-
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem;
-    }
-
-    .control-group {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      background: var(--studio-surface);
-      border: 1px solid var(--studio-border);
-      padding: 0.4rem 0.75rem;
-      border-radius: 8px;
-    }
-
-    input[type="color"] {
-      border: none;
-      width: 28px;
-      height: 28px;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    input[type="text"] {
-      background: transparent;
-      border: none;
-      color: var(--studio-text);
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      width: 90px;
-      outline: none;
-    }
-
-    button {
-      background: var(--color-brand-600);
-      color: #ffffff;
-      border: none;
-      padding: 0.55rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: opacity 0.15s ease;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    button.secondary {
-      background: var(--studio-surface);
-      border: 1px solid var(--studio-border);
-      color: var(--studio-text);
-    }
-
-    .grid-layout {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    @media (min-width: 960px) {
-      .grid-layout {
-        grid-template-columns: 1.4fr 1fr;
-      }
-    }
-
-    .panel {
-      background: var(--studio-surface);
-      border: 1px solid var(--studio-border);
-      border-radius: 12px;
-      padding: 1.25rem;
-    }
-
-    .panel-title {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: var(--studio-muted);
-      margin-bottom: 1rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Swatch Scale Grid */
-    .swatch-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(115px, 1fr));
-      gap: 0.75rem;
-    }
-
-    .swatch-card {
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--studio-border);
-      background: var(--studio-bg);
-    }
-
-    .swatch-color {
-      height: 76px;
-      padding: 0.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-    }
-
-    .contrast-badges {
-      display: flex;
-      gap: 4px;
-    }
-
-    .badge {
-      padding: 1px 4px;
-      border-radius: 3px;
-      font-weight: 700;
-      font-size: 0.65rem;
-    }
-
-    .swatch-meta {
-      padding: 0.5rem;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-    }
-
-    .swatch-step {
-      font-weight: 700;
-      color: var(--studio-text);
-    }
-
-    .swatch-hex {
-      color: var(--studio-muted);
-      cursor: pointer;
-    }
-
-    /* Live POC Preview Card */
-    .poc-preview {
-      background: #ffffff;
-      color: #111827;
-      border-radius: 10px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-
-    .poc-tag {
-      display: inline-block;
-      width: fit-content;
-      background: var(--color-brand-100);
-      color: var(--color-brand-800);
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.25rem 0.6rem;
-      border-radius: 999px;
-    }
-
-    .poc-preview h2 {
-      font-size: clamp(1.25rem, 2.5vw, 1.6rem);
-      line-height: 1.2;
-      color: var(--color-brand-900);
-    }
-
-    .poc-preview p {
-      font-size: 0.9rem;
-      color: #4b5563;
-    }
-
-    .poc-actions {
-      display: flex;
-      gap: 0.75rem;
-      flex-wrap: wrap;
-    }
-
-    .poc-btn-primary {
-      background: var(--color-brand-600);
-      color: #ffffff;
-      min-height: 44px; /* Mobile touch target standard */
-      padding: 0 1.25rem;
-    }
-
-    .poc-btn-outline {
-      background: var(--color-brand-50);
-      color: var(--color-brand-700);
-      border: 1px solid var(--color-brand-200);
-      min-height: 44px;
-      padding: 0 1.25rem;
-    }
-
-    /* Code Output Box */
-    pre {
-      background: var(--studio-bg);
-      border: 1px solid var(--studio-border);
-      border-radius: 8px;
-      padding: 1rem;
-      font-family: var(--font-mono);
-      font-size: 0.8rem;
-      color: #d1d5db;
-      overflow-x: auto;
-      max-height: 260px;
-    }
-  </style>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./studio.css" />
 </head>
 <body>
 
@@ -301,7 +18,7 @@
 
     <div class="controls">
       <div class="control-group">
-        <label for="tokenPrefix" style="font-size: 0.75rem; color: var(--studio-muted);">Prefix</label>
+        <label class="control-label" for="tokenPrefix">Prefix</label>
         <input type="text" id="tokenPrefix" value="brand" aria-label="Token Prefix" />
       </div>
 
@@ -320,7 +37,7 @@
     <section class="panel">
       <div class="panel-title">
         <span>Generated Primitive Scale (50 – 900)</span>
-        <span style="font-size: 0.75rem;">WCAG Contrast vs White / Dark</span>
+        <span class="panel-subtitle">WCAG Contrast vs White / Dark</span>
       </div>
       <div class="swatch-grid" id="swatchGrid"></div>
     </section>
@@ -343,7 +60,7 @@
 
       <div class="panel-title">
         <span>Compiled CSS Variables</span>
-        <span id="copyStatus" style="color: #34d399; font-size: 0.75rem;"></span>
+        <span class="status-text" id="copyStatus"></span>
       </div>
       <pre id="cssOutput"></pre>
     </section>
