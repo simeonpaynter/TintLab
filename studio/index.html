@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TintLab — Design Token Studio</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./studio.css" />
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <h1>TintLab</h1>
+      <span>studio / v0.1</span>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label" for="tokenPrefix">Prefix</label>
+        <input type="text" id="tokenPrefix" value="brand" aria-label="Token Prefix" />
+      </div>
+
+      <div class="control-group">
+        <input type="color" id="baseColorPicker" value="#6366f1" aria-label="Pick Base Color" />
+        <input type="text" id="baseHexInput" value="#6366f1" maxlength="7" aria-label="Hex Color Value" />
+      </div>
+
+      <button class="secondary" id="randomColorBtn" type="button">Randomize</button>
+      <button id="copyCssBtn" type="button">Copy :root CSS</button>
+    </div>
+  </header>
+
+  <main class="grid-layout">
+    <!-- Left Column: Generated 10-Step Token Scale -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>Generated Primitive Scale (50 – 900)</span>
+        <span class="panel-subtitle">WCAG Contrast vs White / Dark</span>
+      </div>
+      <div class="swatch-grid" id="swatchGrid"></div>
+    </section>
+
+    <!-- Right Column: Live Mobile/Desktop POC & CSS Output -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>Live Component POC (44px Touch Targets)</span>
+      </div>
+
+      <div class="poc-preview">
+        <span class="poc-tag">Semantic Token Preview</span>
+        <h2>Responsive UI Stress Test</h2>
+        <p>Components bind strictly to your generated semantic scale so you can verify contrast and hierarchy before exporting.</p>
+        <div class="poc-actions">
+          <button class="poc-btn-primary" type="button">Primary Action</button>
+          <button class="poc-btn-outline" type="button">Secondary</button>
+        </div>
+      </div>
+
+      <div class="panel-title">
+        <span>Compiled CSS Variables</span>
+        <span class="status-text" id="copyStatus"></span>
+      </div>
+      <pre id="cssOutput"></pre>
+    </section>
+  </main>
+
+  <script src="./color-picker.js"></script>
+</body>
+</html>
