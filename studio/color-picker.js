@@ -1,7 +1,8 @@
 /**
- * TintLab — Color Scale & WCAG Contrast Generator
- * Generates a 50–900 primitive ramp from a single base hex color
- * and binds live CSS custom properties to the studio preview.
+ * TintLab — Color Scale, WCAG Contrast & Wireframe/Code Runner
+ * Generates a 50–900 primitive ramp from a single base hex color,
+ * binds live CSS custom properties to the studio preview, and powers
+ * the drag/drop wireframe builder + live code executor tab.
  */
 
 const STEPS = [
@@ -17,7 +18,7 @@ const STEPS = [
   { step: 900, lightness: 19, satAdjust: 10 }
 ];
 
-// DOM Elements
+// DOM Elements — Token Generator
 const colorPicker = document.getElementById("baseColorPicker");
 const hexInput = document.getElementById("baseHexInput");
 const prefixInput = document.getElementById("tokenPrefix");
@@ -26,6 +27,23 @@ const copyCssBtn = document.getElementById("copyCssBtn");
 const swatchGrid = document.getElementById("swatchGrid");
 const cssOutput = document.getElementById("cssOutput");
 const copyStatus = document.getElementById("copyStatus");
+
+// DOM Elements — Tabs, Wireframe Builder & Code Executor
+const tabButtons = document.querySelectorAll(".tab-btn");
+const tabPanels = document.querySelectorAll(".tab-panel");
+const canvas = document.getElementById("canvas");
+const presetItems = document.querySelectorAll(".component-preset");
+const clearCanvasBtn = document.getElementById("clearCanvasBtn");
+const loadWireframeHtmlBtn = document.getElementById("loadWireframeHtmlBtn");
+const syncFromCanvasBtn = document.getElementById("syncFromCanvasBtn");
+const loadTokenCssBtn = document.getElementById("loadTokenCssBtn");
+const exportBundleBtn = document.getElementById("exportBundleBtn");
+const htmlInput = document.getElementById("html-input");
+const cssInput = document.getElementById("css-input");
+const jsInput = document.getElementById("js-input");
+const resultsOutput = document.getElementById("results-output");
+
+let latestBrandRootCss = "";
 
 // --- Color Conversion Helpers ---
 
@@ -160,10 +178,12 @@ function renderStudio(baseHex) {
 
   swatchGrid.innerHTML = "";
   let cssLines = [`:root {`];
+  let internalBrandLines = [`:root {`];
 
   scale.forEach(({ step, hex, rgb }) => {
     // 1. Update live preview CSS variables on :root
     document.documentElement.style.setProperty(`--color-brand-${step}`, hex);
+    internalBrandLines.push(`  --color-brand-${step}: ${hex};`);
 
     // 2. Append to export CSS string
     cssLines.push(`  --color-${prefix}-${step}: ${hex};`);
@@ -203,7 +223,12 @@ function renderStudio(baseHex) {
   });
 
   cssLines.push(`}`);
+  internalBrandLines.push(`}`);
+  latestBrandRootCss = internalBrandLines.join("\n");
   cssOutput.textContent = cssLines.join("\n");
+
+  // Keep live code runner synced with updated brand tokens
+  runResults();
 }
 
 function showStatus(message) {
@@ -217,7 +242,218 @@ function isValidHex(hex) {
   return /^#[0-9A-Fa-f]{6}$/.test(hex);
 }
 
-// --- Event Listeners ---
+// --- Tab Navigation ---
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    tabButtons.forEach((b) => {
+      b.classList.remove("active");
+      b.setAttribute("aria-selected", "false");
+    });
+    tabPanels.forEach((panel) => {
+      panel.hidden = true;
+    });
+
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected", "true");
+    const targetPanel = document.getElementById(btn.getAttribute("aria-controls"));
+    if (targetPanel) {
+      targetPanel.hidden = false;
+    }
+  });
+});
+
+// --- Wireframe Drag & Drop Builder ---
+
+const COMPONENT_TEMPLATES = {
+  header: `<header class="wf-header">
+  <strong>Brand Studio</strong>
+  <nav><a href="#features">Features</a> · <a href="#contact">Contact</a></nav>
+</header>`,
+  hero: `<section class="wf-hero">
+  <span class="wf-badge">New Release</span>
+  <h2>Build with Semantic Tokens</h2>
+  <p>Assemble responsive layouts bound directly to your generated TintLab scale.</p>
+</section>`,
+  button: `<div class="wf-actions">
+  <button type="button" class="wf-btn-primary">Primary Action</button>
+</div>`,
+  card: `<article class="wf-card">
+  <h3>Content Card</h3>
+  <p>Structured content block styled with your active brand tokens.</p>
+</article>`
+};
+
+const DEFAULT_WIREFRAME_CSS = `body {
+  margin: 0;
+  padding: 1rem;
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+.wf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: var(--color-brand-700);
+  color: #ffffff;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+}
+.wf-header a {
+  color: var(--color-brand-100);
+  text-decoration: none;
+  font-size: 0.85rem;
+}
+.wf-hero {
+  background: var(--color-brand-50);
+  border: 1px solid var(--color-brand-200);
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+.wf-badge {
+  display: inline-block;
+  background: var(--color-brand-100);
+  color: var(--color-brand-800);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+}
+.wf-hero h2 {
+  margin: 0.5rem 0 0.35rem;
+  color: var(--color-brand-900);
+  font-size: 1.2rem;
+}
+.wf-hero p, .wf-card p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.wf-actions {
+  margin-bottom: 0.75rem;
+}
+.wf-btn-primary {
+  background: var(--color-brand-600);
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  min-height: 44px;
+  padding: 0 1.25rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wf-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+.wf-card h3 {
+  margin: 0 0 0.35rem;
+  color: var(--color-brand-800);
+  font-size: 1rem;
+}`;
+
+presetItems.forEach((item) => {
+  item.addEventListener("dragstart", (e) => {
+    e.dataTransfer.setData("text/plain", item.dataset.type);
+  });
+});
+
+canvas.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  canvas.classList.add("drag-over");
+});
+
+canvas.addEventListener("dragleave", () => {
+  canvas.classList.remove("drag-over");
+});
+
+canvas.addEventListener("drop", (e) => {
+  e.preventDefault();
+  canvas.classList.remove("drag-over");
+  const type = e.dataTransfer.getData("text/plain");
+  if (COMPONENT_TEMPLATES[type]) {
+    canvas.insertAdjacentHTML("beforeend", COMPONENT_TEMPLATES[type]);
+  }
+});
+
+function syncCanvasToEditor() {
+  htmlInput.value = canvas.innerHTML.trim();
+  if (!cssInput.value.trim()) {
+    cssInput.value = DEFAULT_WIREFRAME_CSS;
+  }
+  runResults();
+}
+
+clearCanvasBtn.addEventListener("click", () => {
+  canvas.innerHTML = "";
+});
+
+loadWireframeHtmlBtn.addEventListener("click", syncCanvasToEditor);
+syncFromCanvasBtn.addEventListener("click", syncCanvasToEditor);
+
+loadTokenCssBtn.addEventListener("click", () => {
+  const tokenBlock = cssOutput.textContent.trim();
+  if (!cssInput.value.includes(tokenBlock)) {
+    cssInput.value = `${tokenBlock}\n\n${cssInput.value}`.trim();
+  }
+  runResults();
+});
+
+exportBundleBtn.addEventListener("click", () => {
+  const bundle = buildPreviewDocument();
+  navigator.clipboard.writeText(bundle);
+  exportBundleBtn.textContent = "Copied!";
+  setTimeout(() => {
+    exportBundleBtn.textContent = "Copy HTML Bundle";
+  }, 1800);
+});
+
+// --- Live Code Executor ---
+
+function buildPreviewDocument() {
+  const htmlCode = htmlInput.value;
+  const userCss = cssInput.value;
+  const jsCode = jsInput.value;
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+${latestBrandRootCss}
+${userCss}
+  </style>
+</head>
+<body>
+${htmlCode}
+<script>
+try {
+${jsCode}
+} catch (err) {
+  console.error(err);
+}
+<\/script>
+</body>
+</html>`;
+}
+
+function runResults() {
+  if (!resultsOutput) return;
+  resultsOutput.srcdoc = buildPreviewDocument();
+}
+
+[htmlInput, cssInput, jsInput].forEach((editor) => {
+  editor.addEventListener("input", runResults);
+});
+
+// --- Token Event Listeners ---
 
 colorPicker.addEventListener("input", (e) => {
   const val = e.target.value;
