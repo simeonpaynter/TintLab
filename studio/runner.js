@@ -16,13 +16,19 @@
   const clearJsBtn = document.getElementById("clearJsBtn");
   const clearPreviewBtn = document.getElementById("clearPreviewBtn");
 
-function buildPreviewDocument(customHtml, customCss, customJs) {
-  const rootCss = window.StudioTokens ? window.StudioTokens.getRootCss() : "";
-  const htmlCode = customHtml !== undefined ? customHtml : htmlInput.value;
-  const userCss = customCss !== undefined ? customCss : cssInput.value;
-  const jsCode = customJs !== undefined ? customJs : jsInput.value;
-
-  return `<!DOCTYPE html>
+  function escapeStyleTag(css = "") {
+    return String(css).replace(/<\/style/gi, "<\\/style");
+  }
+  
+  function escapeScriptTag(js = "") {
+    return String(js).replace(/<\/script/gi, "<\\/script");
+  }
+  function buildPreviewDocument(customHtml, customCss, customJs) {
+    const rootCss = window.StudioTokens ? window.StudioTokens.getRootCss() : "";
+    const htmlCode = customHtml !== undefined ? customHtml : htmlInput.value;
+    const userCss = customCss !== undefined ? customCss : cssInput.value;
+    const jsCode = customJs !== undefined ? customJs : jsInput.value;
+    return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -43,8 +49,8 @@ ${escapeScriptTag(jsCode)}
 </script>
 </body>
 </html>`;
-}
-
+  }
+  
   function runResults() {
     if (!resultsOutput) return;
     resultsOutput.srcdoc = buildPreviewDocument();
