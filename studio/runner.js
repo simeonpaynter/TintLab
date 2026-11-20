@@ -16,33 +16,34 @@
   const clearJsBtn = document.getElementById("clearJsBtn");
   const clearPreviewBtn = document.getElementById("clearPreviewBtn");
 
-  function buildPreviewDocument(customHtml, customCss, customJs) {
-    const rootCss = window.StudioTokens ? window.StudioTokens.getRootCss() : "";
-    const htmlCode = customHtml !== undefined ? customHtml : htmlInput.value;
-    const userCss = customCss !== undefined ? customCss : cssInput.value;
-    const jsCode = customJs !== undefined ? customJs : jsInput.value;
+function buildPreviewDocument(customHtml, customCss, customJs) {
+  const rootCss = window.StudioTokens ? window.StudioTokens.getRootCss() : "";
+  const htmlCode = customHtml !== undefined ? customHtml : htmlInput.value;
+  const userCss = customCss !== undefined ? customCss : cssInput.value;
+  const jsCode = customJs !== undefined ? customJs : jsInput.value;
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data: https:; font-src data: https:;" />
   <style>
-${rootCss}
-${userCss}
+${escapeStyleTag(rootCss)}
+${escapeStyleTag(userCss)}
   </style>
 </head>
 <body>
 ${htmlCode}
 <script>
 try {
-${jsCode}
+${escapeScriptTag(jsCode)}
 } catch (err) {
   console.error(err);
 }
-<\/script>
+</script>
 </body>
 </html>`;
-  }
+}
 
   function runResults() {
     if (!resultsOutput) return;
