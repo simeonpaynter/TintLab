@@ -16,6 +16,30 @@
       <span>studio / v0.1</span>
     </div>
 
+    <!-- Workspace Tabs -->
+    <nav class="studio-tabs" role="tablist" aria-label="Studio Workspace">
+      <button
+        type="button"
+        class="tab-btn active"
+        id="tab-tokens"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-tokens"
+      >
+        Token Generator
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        id="tab-builder"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-builder"
+      >
+        Wireframe &amp; Code Runner
+      </button>
+    </nav>
+
     <div class="controls">
       <div class="control-group">
         <label class="control-label" for="tokenPrefix">Prefix</label>
@@ -32,7 +56,8 @@
     </div>
   </header>
 
-  <main class="grid-layout">
+  <!-- TAB 1: Token Generator & WCAG Contrast Scale -->
+  <main class="grid-layout tab-panel" id="panel-tokens" role="tabpanel" aria-labelledby="tab-tokens">
     <!-- Left Column: Generated 10-Step Token Scale -->
     <section class="panel">
       <div class="panel-title">
@@ -63,6 +88,78 @@
         <span class="status-text" id="copyStatus"></span>
       </div>
       <pre id="cssOutput"></pre>
+    </section>
+  </main>
+
+  <!-- TAB 2: Drag/Drop Component Builder & Live Code Executor -->
+  <main class="builder-layout tab-panel" id="panel-builder" role="tabpanel" aria-labelledby="tab-builder" hidden>
+    <!-- Left Column: Component Palette & Mobile Wireframe Canvas -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>Wireframe Component Builder</span>
+        <span class="panel-subtitle">Drag blocks into canvas</span>
+      </div>
+
+      <div class="component-palette">
+        <div class="component-preset" draggable="true" data-type="header">Header Block</div>
+        <div class="component-preset" draggable="true" data-type="hero">Hero Feature Box</div>
+        <div class="component-preset" draggable="true" data-type="button">Action Button</div>
+        <div class="component-preset" draggable="true" data-type="card">Content Card</div>
+      </div>
+
+      <div class="panel-title">
+        <span>Mobile Viewport Canvas (375px)</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearCanvasBtn">Clear</button>
+          <button type="button" class="btn-sm" id="loadWireframeHtmlBtn">Load into HTML</button>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div id="canvas" aria-label="Wireframe Drop Canvas"></div>
+      </div>
+    </section>
+
+    <!-- Middle Column: HTML / CSS / JS Code Editor -->
+    <section class="panel code-editor-panel">
+      <div class="panel-title">
+        <span>HTML</span>
+        <button type="button" class="secondary btn-sm" id="syncFromCanvasBtn">Load from Wireframe</button>
+      </div>
+      <textarea
+        id="html-input"
+        spellcheck="false"
+        placeholder="<h1>Hello TintLab!</h1>&#10;<p>Drag blocks on the left or write custom HTML here.</p>"
+      ></textarea>
+
+      <div class="panel-title">
+        <span>CSS</span>
+        <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">Insert :root Tokens</button>
+      </div>
+      <textarea
+        id="css-input"
+        spellcheck="false"
+        placeholder="body { font-family: system-ui, sans-serif; padding: 1rem; }&#10;h1 { color: var(--color-brand-700); }"
+      ></textarea>
+
+      <div class="panel-title">
+        <span>JavaScript</span>
+        <span class="panel-subtitle">Runs inside preview</span>
+      </div>
+      <textarea
+        id="js-input"
+        spellcheck="false"
+        placeholder="// Optional interactive script"
+      ></textarea>
+    </section>
+
+    <!-- Right Column: Sandboxed Live Output Frame -->
+    <section class="panel preview-panel">
+      <div class="panel-title">
+        <span>Live Execution Preview</span>
+        <button type="button" class="secondary btn-sm" id="exportBundleBtn">Copy HTML Bundle</button>
+      </div>
+      <iframe id="results-output" title="Live Code Preview" sandbox="allow-scripts"></iframe>
     </section>
   </main>
 
