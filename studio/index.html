@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,7 +13,7 @@
     <div class="brand">
       <div class="brand-dot"></div>
       <h1>TintLab</h1>
-      <span>studio / v0.1</span>
+      <span>studio</span>
     </div>
 
     <nav class="studio-tabs" role="tablist" aria-label="Studio Workspace">
@@ -35,7 +35,7 @@
         aria-selected="false"
         aria-controls="panel-builder"
       >
-        Wireframe &amp; Code Runner
+        Wireframe & Component Builder
       </button>
     </nav>
 
@@ -60,7 +60,7 @@
     <section class="panel">
       <div class="panel-title">
         <span>Scale (50 – 900)</span>
-        <span class="panel-subtitle">Click hex to copy; W/D = contrast vs white/dark</span>
+        <span class="panel-subtitle">Click the hex value to copy; W/D = WCAG contrast vs white/dark</span>
       </div>
       <div class="swatch-grid" id="swatchGrid"></div>
     </section>
@@ -68,12 +68,12 @@
     <section class="panel">
       <div class="panel-title">
         <span>Component Preview</span>
-        <span class="panel-subtitle">44px min touch targets</span>
+        <span class="panel-subtitle">Use the Wireframe builder to further mirror your vision.</span>
       </div>
 
       <div class="poc-preview">
         <span class="poc-tag">Token Preview</span>
-        <h2>Responsive UI Check</h2>
+        <h2>Responsive UI Stress Test</h2>
         <div class="poc-actions">
           <button class="poc-btn-primary" type="button">Primary Action</button>
           <button class="poc-btn-outline" type="button">Secondary</button>
@@ -81,7 +81,7 @@
       </div>
 
       <div class="panel-title">
-        <span>:root CSS Variables</span>
+        <span>Compiled CSS Variables</span>
         <span class="status-text" id="copyStatus"></span>
       </div>
       <pre id="cssOutput"></pre>
@@ -93,7 +93,7 @@
     <!-- Left Column: Top 10 Components (2 tabs x 5 rows) & 375px Canvas -->
     <section class="panel">
       <div class="panel-title">
-        <span>Top 10 Components</span>
+        <span>Wireframe Component Builder</span>
         <div class="palette-tabs" role="tablist" aria-label="Component Table Pages">
           <button
             type="button"
@@ -103,7 +103,7 @@
             aria-selected="true"
             aria-controls="palette-page-1"
           >
-            1–5
+            1-5
           </button>
           <button
             type="button"
@@ -113,7 +113,7 @@
             aria-selected="false"
             aria-controls="palette-page-2"
           >
-            6–10
+            6-10
           </button>
         </div>
       </div>
@@ -130,7 +130,7 @@
       </table>
 
       <div class="panel-title canvas-header">
-        <span>Canvas (375px)</span>
+        <span>Canvas (375px for Mobile-first)</span>
         <div class="inline-actions">
           <button type="button" class="secondary btn-sm" id="clearCanvasBtn">Clear</button>
           <button type="button" class="btn-sm" id="loadWireframeHtmlBtn">Load to HTML</button>
@@ -160,7 +160,7 @@
       <div class="panel-title">
         <span>CSS</span>
         <div class="inline-actions">
-          <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">+ :root Tokens</button>
+          <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">+ Design Tokens</button>
           <button type="button" class="secondary btn-sm" id="clearCssBtn">Clear</button>
         </div>
       </div>
