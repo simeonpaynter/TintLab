@@ -52,6 +52,38 @@ header {
   border: 1px solid var(--studio-border);
 }
 
+/* Studio Mode Tabs */
+.studio-tabs {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--studio-surface-subtle);
+  border: 1px solid var(--studio-border);
+  padding: 0.25rem;
+  border-radius: 10px;
+}
+
+.tab-btn {
+  background: transparent;
+  color: var(--studio-muted);
+  border: none;
+  padding: 0.45rem 0.9rem;
+  border-radius: 7px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tab-btn:hover {
+  color: var(--studio-text);
+  opacity: 1;
+}
+
+.tab-btn.active {
+  background: var(--studio-surface);
+  color: var(--color-brand-700);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -101,7 +133,7 @@ button {
   font-weight: 600;
   font-size: 0.875rem;
   cursor: pointer;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
 }
 
 button:hover {
@@ -116,6 +148,21 @@ button.secondary {
 
 button.secondary:hover {
   background: var(--studio-surface-subtle);
+}
+
+button.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.75rem;
+  border-radius: 6px;
+}
+
+.inline-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.tab-panel[hidden] {
+  display: none;
 }
 
 .grid-layout {
@@ -148,6 +195,7 @@ button.secondary:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .panel-subtitle {
@@ -289,4 +337,183 @@ pre {
   color: var(--studio-code-text);
   overflow-x: auto;
   max-height: 260px;
+}
+
+/* --- TAB 2: Wireframe Builder & Code Executor --- */
+.builder-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+@media (min-width: 1120px) {
+  .builder-layout {
+    grid-template-columns: 415px 1fr 1fr;
+  }
+}
+
+.component-palette {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.component-preset {
+  background: var(--studio-bg);
+  border: 1px dashed var(--color-brand-400);
+  color: var(--studio-text);
+  border-radius: 8px;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: grab;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.component-preset:hover {
+  background: var(--color-brand-50);
+  border-color: var(--color-brand-600);
+  color: var(--color-brand-800);
+}
+
+.component-preset:active {
+  cursor: grabbing;
+}
+
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+  background: var(--studio-bg);
+  border: 1px solid var(--studio-border);
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+#canvas {
+  width: 375px;
+  min-height: 540px;
+  background: var(--studio-surface);
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  padding: 0.85rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+  transition: outline 0.15s ease, background-color 0.15s ease;
+}
+
+#canvas.drag-over {
+  outline: 2px dashed var(--color-brand-500);
+  background: var(--color-brand-50);
+}
+
+/* Canvas Wireframe Block Preview Styles */
+#canvas .wf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background: var(--color-brand-700);
+  color: #ffffff;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 0.65rem;
+}
+
+#canvas .wf-header a {
+  color: var(--color-brand-100);
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+#canvas .wf-hero {
+  background: var(--color-brand-50);
+  border: 1px solid var(--color-brand-200);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.65rem;
+}
+
+#canvas .wf-badge {
+  display: inline-block;
+  background: var(--color-brand-100);
+  color: var(--color-brand-800);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+#canvas .wf-hero h2 {
+  font-size: 1.05rem;
+  color: var(--color-brand-900);
+  margin: 0.4rem 0 0.25rem;
+}
+
+#canvas .wf-hero p,
+#canvas .wf-card p {
+  font-size: 0.8rem;
+  color: var(--studio-muted);
+}
+
+#canvas .wf-actions {
+  margin-bottom: 0.65rem;
+}
+
+#canvas .wf-btn-primary {
+  background: var(--color-brand-600);
+  color: #ffffff;
+  min-height: 44px;
+  padding: 0 1.1rem;
+  font-size: 0.85rem;
+}
+
+#canvas .wf-card {
+  background: var(--studio-surface);
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  padding: 0.85rem;
+  margin-bottom: 0.65rem;
+}
+
+#canvas .wf-card h3 {
+  font-size: 0.9rem;
+  color: var(--color-brand-800);
+  margin-bottom: 0.25rem;
+}
+
+/* Code Editor Textareas & Preview Frame */
+.code-editor-panel textarea {
+  width: 100%;
+  height: 155px;
+  background: var(--studio-code-bg);
+  color: var(--studio-code-text);
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  resize: vertical;
+  margin-bottom: 1.1rem;
+  outline: none;
+}
+
+.code-editor-panel textarea:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px var(--color-brand-100);
+}
+
+.code-editor-panel textarea:last-of-type {
+  margin-bottom: 0;
+}
+
+#results-output {
+  width: 100%;
+  height: 590px;
+  border: 1px solid var(--studio-border);
+  border-radius: 8px;
+  background: #ffffff;
 }
