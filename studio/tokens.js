@@ -158,20 +158,37 @@
     return /^#[0-9A-Fa-f]{6}$/.test(hex);
   }
 
+  function sanitizePrefix(rawPrefix) {
+    const trimmed = String(rawPrefix || "").trim();
+    return /^[a-zA-Z_-][a-zA-Z0-9_-]*$/.test(trimmed) ? trimmed : "brand";
+  }
+
+  function createContrastBadge(bgHex, fgHex, titleText, labelText) {
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.style.backgroundColor = bgHex;
+    badge.style.color = fgHex;
+    badge.title = titleText;
+    badge.textContent = labelText;
+    return badge;
+  }
+
   function renderStudio(baseHex) {
-    const prefix = (prefixInput.value.trim() || "brand").replace(/[^a-zA-Z0-9-_]/g, "") || "brand";
-    const scale = generateScale(baseHex);
+    const safeHex = isValidHex(baseHex) ? baseHex.toLowerCase() : "#6366f1";
+    const prefix = sanitizePrefix(prefixInput ? prefixInput.value : "brand");
+    const scale = generateScale(safeHex);
     const whiteRgb = { r: 255, g: 255, b: 255 };
     const darkRgb = { r: 17, g: 24, b: 39 };
 
-    swatchGrid.innerHTML = "";
+    swatchGrid.replaceChildren();
     const cssLines = [":root {"];
     const internalBrandLines = [":root {"];
 
     scale.forEach(({ step, hex, rgb }) => {
-      document.documentElement.style.setProperty(`--color-brand-${step}`, hex);
-      internalBrandLines.push(`  --color-brand-${step}: ${hex};`);
-      cssLines.push(`  --color-${prefix}-${step}: ${hex};`);
+      const safeStepHex = isValidHex(hex) ? hex.toLowerCase() : safeHex;
+      document.documentElement.style.setProperty(`--color-brand-${step}`, safeStepHex);
+      internalBrandLines.push(`  --color-brand-${step}: ${safeStepHex};`);
+      cssLines.push(`  --color-${prefix}-${step}: ${safeStepHex};`);
 
       const whiteRatio = getContrastRatio(rgb, whiteRgb);
       const darkRatio = getContrastRatio(rgb, darkRgb);
@@ -180,28 +197,47 @@
 
       const card = document.createElement("div");
       card.className = "swatch-card";
-      card.innerHTML = `
-        <div class="swatch-color" style="background-color: ${hex};">
-          <div class="contrast-badges">
-            <span class="badge" style="background:#ffffff; color:#111827;" title="Contrast vs White: ${whiteRatio.toFixed(2)}">
-              W ${whitePass ? "AA" : whiteRatio.toFixed(1)}
-            </span>
-            <span class="badge" style="background:#111827; color:#ffffff;" title="Contrast vs Dark: ${darkRatio.toFixed(2)}">
-              D ${darkPass ? "AA" : darkRatio.toFixed(1)}
-            </span>
-          </div>
-        </div>
-        <div class="swatch-meta">
-          <div class="swatch-step">${step}</div>
-          <div class="swatch-hex" title="Click to copy hex">${hex}</div>
-        </div>
-      `;
 
-      card.querySelector(".swatch-hex").addEventListener("click", () => {
-        navigator.clipboard.writeText(hex);
-        showStatus(`Copied ${hex}`);
+      const colorBox = document.createElement("div");
+      colorBox.className = "swatch-color";
+      colorBox.style.backgroundColor = safeStepHex;
+
+      const badges = document.createElement("div");
+      badges.className = "contrast-badges";
+      badges.append(
+        createContrastBadge(
+          "#ffffff",
+          "#111827",
+          `Contrast vs White: ${whiteRatio.toFixed(2)}`,
+          `W ${whitePass ? "AA" : whiteRatio.toFixed(1)}`
+        ),
+        createContrastBadge(
+          "#111827",
+          "#ffffff",
+          `Contrast vs Dark: ${darkRatio.toFixed(2)}`,
+          `D ${darkPass ? "AA" : darkRatio.toFixed(1)}`
+        )
+      );
+      colorBox.appendChild(badges);
+
+      const meta = document.createElement("div");
+      meta.className = "swatch-meta";
+
+      const stepEl = document.createElement("div");
+      stepEl.className = "swatch-step";
+      stepEl.textContent = String(step);
+
+      const hexEl = document.createElement("div");
+      hexEl.className = "swatch-hex";
+      hexEl.title = "Click to copy hex";
+      hexEl.textContent = safeStepHex;
+      hexEl.addEventListener("click", () => {
+        navigator.clipboard.writeText(safeStepHex);
+        showStatus(`Copied ${safeStepHex}`);
       });
 
+      meta.append(stepEl, hexEl);
+      card.append(colorBox, meta);
       swatchGrid.appendChild(card);
     });
 
