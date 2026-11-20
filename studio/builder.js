@@ -202,23 +202,60 @@
   const clearCanvasBtn = document.getElementById("clearCanvasBtn");
   const loadWireframeHtmlBtn = document.getElementById("loadWireframeHtmlBtn");
 
-  function renderComponentRows(tbody, items) {
-    tbody.innerHTML = "";
-    items.forEach((item) => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="rank-cell">${item.rank}</td>
-        <td>
-          <div class="component-preset" draggable="true" data-type="${item.type}">${item.label}</div>
-        </td>
-      `;
-      tbody.appendChild(tr);
+  function sanitizeWireframeMarkup(markup) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(String(markup || ""), "text/html");
+
+    doc
+      .querySelectorAll("script, iframe, object, embed, link[rel='import']")
+      .forEach((el) => el.remove());
+
+    doc.body.querySelectorAll("*").forEach((el) => {
+      [...el.attributes].forEach((attr) => {
+        const name = attr.name.toLowerCase();
+        const val = attr.value.trim().toLowerCase();
+        if (
+          name.startsWith("on") ||
+          ((name === "href" || name === "src") && val.startsWith("javascript:"))
+        ) {
+          el.removeAttribute(attr.name);
+        }
+      });
     });
 
-    tbody.querySelectorAll(".component-preset").forEach((preset) => {
+    return doc.body.innerHTML;
+  }
+
+  function appendSanitizedMarkup(container, markup) {
+    const cleanHtml = sanitizeWireframeMarkup(markup);
+    const template = document.createElement("template");
+    template.innerHTML = cleanHtml;
+    container.appendChild(template.content);
+  }
+
+  function renderComponentRows(tbody, items) {
+    tbody.replaceChildren();
+    items.forEach((item) => {
+      const tr = document.createElement("tr");
+
+      const rankTd = document.createElement("td");
+      rankTd.className = "rank-cell";
+      rankTd.textContent = String(item.rank);
+
+      const presetTd = document.createElement("td");
+      const preset = document.createElement("div");
+      preset.className = "component-preset";
+      preset.draggable = true;
+      preset.dataset.type = item.type;
+      preset.textContent = item.label;
+
       preset.addEventListener("dragstart", (e) => {
         e.dataTransfer.setData("text/plain", preset.dataset.type);
       });
+
+      presetTd.appendChild(preset);
+      tr.append(rankTd, presetTd);
+      tbody.appendChild(tr);
     });
   }
 
@@ -234,7 +271,8 @@
 
       btn.classList.add("active");
       btn.setAttribute("aria-selected", "true");
-      const target = document.getElementById(btn.getAttribute("aria-controls"));
+      const targetId = btn.getAttribute("aria-controls");
+      const target = targetId ? document.getElementById(targetId) : null;
       if (target) target.hidden = false;
     });
   });
@@ -252,24 +290,28 @@
     e.preventDefault();
     canvas.classList.remove("drag-over");
     const type = e.dataTransfer.getData("text/plain");
-    if (templateMap[type]) {
-      canvas.insertAdjacentHTML("beforeend", templateMap[type]);
+    if (Object.prototype.hasOwnProperty.call(templateMap, type)) {
+      appendSanitizedMarkup(canvas, templateMap[type]);
     }
   });
 
   clearCanvasBtn.addEventListener("click", () => {
-    canvas.innerHTML = "";
+    canvas.replaceChildren();
   });
+
+  function getSanitizedCanvasHtml() {
+    return sanitizeWireframeMarkup(canvas.innerHTML).trim();
+  }
 
   function pushCanvasToRunner() {
     if (!window.StudioRunner) return;
-    window.StudioRunner.loadWireframe(canvas.innerHTML.trim(), DEFAULT_WIREFRAME_CSS);
+    window.StudioRunner.loadWireframe(getSanitizedCanvasHtml(), DEFAULT_WIREFRAME_CSS);
   }
 
   loadWireframeHtmlBtn.addEventListener("click", pushCanvasToRunner);
 
   window.StudioBuilder = {
-    getCanvasHtml: () => canvas.innerHTML.trim(),
+    getCanvasHtml: getSanitizedCanvasHtml,
     getDefaultCss: () => DEFAULT_WIREFRAME_CSS,
     init: () => {
       renderComponentRows(page1Body, TOP_10_COMPONENTS.slice(0, 5));
