@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TintLab — Design Token Studio</title>
-  <link rel="stylesheet" href="./tokens.css" />
-  <link rel="stylesheet" href="./studio.css" />
+  <link rel="stylesheet" href="studio/tokens.css" />
+  <link rel="stylesheet" href="studio/studio.css" />
 </head>
 <body>
 
@@ -13,10 +13,9 @@
     <div class="brand">
       <div class="brand-dot"></div>
       <h1>TintLab</h1>
-      <span>studio / v0.1</span>
+      <span>studio</span>
     </div>
 
-    <!-- Workspace Tabs -->
     <nav class="studio-tabs" role="tablist" aria-label="Studio Workspace">
       <button
         type="button"
@@ -36,7 +35,7 @@
         aria-selected="false"
         aria-controls="panel-builder"
       >
-        Wireframe &amp; Code Runner
+        Wireframe & Component Builder
       </button>
     </nav>
 
@@ -58,25 +57,23 @@
 
   <!-- TAB 1: Token Generator & WCAG Contrast Scale -->
   <main class="grid-layout tab-panel" id="panel-tokens" role="tabpanel" aria-labelledby="tab-tokens">
-    <!-- Left Column: Generated 10-Step Token Scale -->
     <section class="panel">
       <div class="panel-title">
-        <span>Generated Primitive Scale (50 – 900)</span>
-        <span class="panel-subtitle">WCAG Contrast vs White / Dark</span>
+        <span>Scale (50 – 900)</span>
+        <span class="panel-subtitle">Click the hex value to copy; W/D = WCAG contrast vs white/dark</span>
       </div>
       <div class="swatch-grid" id="swatchGrid"></div>
     </section>
 
-    <!-- Right Column: Live Mobile/Desktop POC & CSS Output -->
     <section class="panel">
       <div class="panel-title">
-        <span>Live Component POC (44px Touch Targets)</span>
+        <span>Component Preview</span>
+        <span class="panel-subtitle">Use the Wireframe builder to further mirror your vision.</span>
       </div>
 
       <div class="poc-preview">
-        <span class="poc-tag">Semantic Token Preview</span>
+        <span class="poc-tag">Token Preview</span>
         <h2>Responsive UI Stress Test</h2>
-        <p>Components bind strictly to your generated semantic scale so you can verify contrast and hierarchy before exporting.</p>
         <div class="poc-actions">
           <button class="poc-btn-primary" type="button">Primary Action</button>
           <button class="poc-btn-outline" type="button">Secondary</button>
@@ -91,27 +88,52 @@
     </section>
   </main>
 
-  <!-- TAB 2: Drag/Drop Component Builder & Live Code Executor -->
+  <!-- TAB 2: Wireframe Builder & Live Code Executor -->
   <main class="builder-layout tab-panel" id="panel-builder" role="tabpanel" aria-labelledby="tab-builder" hidden>
-    <!-- Left Column: Component Palette & Mobile Wireframe Canvas -->
+    <!-- Left Column: Top 10 Components (2 tabs x 5 rows) & 375px Canvas -->
     <section class="panel">
       <div class="panel-title">
         <span>Wireframe Component Builder</span>
-        <span class="panel-subtitle">Drag blocks into canvas</span>
+        <div class="palette-tabs" role="tablist" aria-label="Component Table Pages">
+          <button
+            type="button"
+            class="palette-tab-btn active"
+            id="palette-tab-1"
+            role="tab"
+            aria-selected="true"
+            aria-controls="palette-page-1"
+          >
+            1-5
+          </button>
+          <button
+            type="button"
+            class="palette-tab-btn"
+            id="palette-tab-2"
+            role="tab"
+            aria-selected="false"
+            aria-controls="palette-page-2"
+          >
+            6-10
+          </button>
+        </div>
       </div>
 
-      <div class="component-palette">
-        <div class="component-preset" draggable="true" data-type="header">Header Block</div>
-        <div class="component-preset" draggable="true" data-type="hero">Hero Feature Box</div>
-        <div class="component-preset" draggable="true" data-type="button">Action Button</div>
-        <div class="component-preset" draggable="true" data-type="card">Content Card</div>
-      </div>
+      <table class="component-table" aria-label="Drag and drop wireframe components">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Component (Drag to Canvas)</th>
+          </tr>
+        </thead>
+        <tbody id="palette-page-1" class="palette-page" role="tabpanel" aria-labelledby="palette-tab-1"></tbody>
+        <tbody id="palette-page-2" class="palette-page" role="tabpanel" aria-labelledby="palette-tab-2" hidden></tbody>
+      </table>
 
-      <div class="panel-title">
-        <span>Mobile Viewport Canvas (375px)</span>
+      <div class="panel-title canvas-header">
+        <span>Canvas (375px for Mobile-first)</span>
         <div class="inline-actions">
           <button type="button" class="secondary btn-sm" id="clearCanvasBtn">Clear</button>
-          <button type="button" class="btn-sm" id="loadWireframeHtmlBtn">Load into HTML</button>
+          <button type="button" class="btn-sm" id="loadWireframeHtmlBtn">Load to HTML</button>
         </div>
       </div>
 
@@ -120,49 +142,63 @@
       </div>
     </section>
 
-    <!-- Middle Column: HTML / CSS / JS Code Editor -->
+    <!-- Middle Column: HTML / CSS / JS Editors -->
     <section class="panel code-editor-panel">
       <div class="panel-title">
         <span>HTML</span>
-        <button type="button" class="secondary btn-sm" id="syncFromCanvasBtn">Load from Wireframe</button>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="syncFromCanvasBtn">From Canvas</button>
+          <button type="button" class="secondary btn-sm" id="clearHtmlBtn">Clear</button>
+        </div>
       </div>
       <textarea
         id="html-input"
         spellcheck="false"
-        placeholder="<h1>Hello TintLab!</h1>&#10;<p>Drag blocks on the left or write custom HTML here.</p>"
+        placeholder="<button class='wf-btn-primary'>Click me</button>"
       ></textarea>
 
       <div class="panel-title">
         <span>CSS</span>
-        <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">Insert :root Tokens</button>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">+ Design Tokens</button>
+          <button type="button" class="secondary btn-sm" id="clearCssBtn">Clear</button>
+        </div>
       </div>
       <textarea
         id="css-input"
         spellcheck="false"
-        placeholder="body { font-family: system-ui, sans-serif; padding: 1rem; }&#10;h1 { color: var(--color-brand-700); }"
+        placeholder="h1 { color: var(--color-brand-700); }"
       ></textarea>
 
       <div class="panel-title">
         <span>JavaScript</span>
-        <span class="panel-subtitle">Runs inside preview</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearJsBtn">Clear</button>
+        </div>
       </div>
       <textarea
         id="js-input"
         spellcheck="false"
-        placeholder="// Optional interactive script"
+        placeholder="document.querySelector('button')?.addEventListener('click', () => alert('Clicked'));"
       ></textarea>
     </section>
 
     <!-- Right Column: Sandboxed Live Output Frame -->
     <section class="panel preview-panel">
       <div class="panel-title">
-        <span>Live Execution Preview</span>
-        <button type="button" class="secondary btn-sm" id="exportBundleBtn">Copy HTML Bundle</button>
+        <span>Preview</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearPreviewBtn">Clear Preview</button>
+          <button type="button" class="secondary btn-sm" id="exportBundleBtn">Copy HTML</button>
+        </div>
       </div>
       <iframe id="results-output" title="Live Code Preview" sandbox="allow-scripts"></iframe>
     </section>
   </main>
 
-  <script src="./color-picker.js"></script>
+  <script src="studio/tokens.js" defer></script>
+  <script src="studio/builder.js" defer></script>
+  <script src="studio/runner.js" defer></script>
+  <script src="studio/studio.js" defer></script>
 </body>
 </html>
