@@ -1,0 +1,27 @@
+:root {
+  /* Studio Light Theme Surfaces & Typography */
+  --studio-bg: #f8fafc;
+  --studio-surface: #ffffff;
+  --studio-surface-subtle: #f1f5f9;
+  --studio-border: #e2e8f0;
+  --studio-text: #0f172a;
+  --studio-muted: #64748b;
+  --studio-code-bg: #f1f5f9;
+  --studio-code-text: #1e293b;
+  --studio-success: #059669;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Dynamic Generated Tokens (Updated live by color-picker.js) */
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+}

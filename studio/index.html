@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TintLab — Design Token Studio</title>
+  <link rel="stylesheet" href="./tokens.css" />
+  <link rel="stylesheet" href="./studio.css" />
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <h1>TintLab</h1>
+      <span>studio</span>
+    </div>
+
+    <nav class="studio-tabs" role="tablist" aria-label="Studio Workspace">
+      <button
+        type="button"
+        class="tab-btn active"
+        id="tab-tokens"
+        role="tab"
+        aria-selected="true"
+        aria-controls="panel-tokens"
+      >
+        Token Generator
+      </button>
+      <button
+        type="button"
+        class="tab-btn"
+        id="tab-builder"
+        role="tab"
+        aria-selected="false"
+        aria-controls="panel-builder"
+      >
+        Wireframe & Component Builder
+      </button>
+    </nav>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label" for="tokenPrefix">Prefix</label>
+        <input type="text" id="tokenPrefix" value="brand" aria-label="Token Prefix" />
+      </div>
+
+      <div class="control-group">
+        <input type="color" id="baseColorPicker" value="#6366f1" aria-label="Pick Base Color" />
+        <input type="text" id="baseHexInput" value="#6366f1" maxlength="7" aria-label="Hex Color Value" />
+      </div>
+
+      <button class="secondary" id="randomColorBtn" type="button">Randomize</button>
+      <button id="copyCssBtn" type="button">Copy :root CSS</button>
+    </div>
+  </header>
+
+  <!-- TAB 1: Token Generator & WCAG Contrast Scale -->
+  <main class="grid-layout tab-panel" id="panel-tokens" role="tabpanel" aria-labelledby="tab-tokens">
+    <section class="panel">
+      <div class="panel-title">
+        <span>Scale (50 – 900)</span>
+        <span class="panel-subtitle">Click the hex value to copy; W/D = WCAG contrast vs white/dark</span>
+      </div>
+      <div class="swatch-grid" id="swatchGrid"></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">
+        <span>Component Preview</span>
+        <span class="panel-subtitle">Use the Wireframe builder to further mirror your vision.</span>
+      </div>
+
+      <div class="poc-preview">
+        <span class="poc-tag">Token Preview</span>
+        <h2>Responsive UI Stress Test</h2>
+        <div class="poc-actions">
+          <button class="poc-btn-primary" type="button">Primary Action</button>
+          <button class="poc-btn-outline" type="button">Secondary</button>
+        </div>
+      </div>
+
+      <div class="panel-title">
+        <span>Compiled CSS Variables</span>
+        <span class="status-text" id="copyStatus"></span>
+      </div>
+      <pre id="cssOutput"></pre>
+    </section>
+  </main>
+
+  <!-- TAB 2: Wireframe Builder & Live Code Executor -->
+  <main class="builder-layout tab-panel" id="panel-builder" role="tabpanel" aria-labelledby="tab-builder" hidden>
+    <!-- Left Column: Top 10 Components (2 tabs x 5 rows) & 375px Canvas -->
+    <section class="panel">
+      <div class="panel-title">
+        <span>Wireframe Component Builder</span>
+        <div class="palette-tabs" role="tablist" aria-label="Component Table Pages">
+          <button
+            type="button"
+            class="palette-tab-btn active"
+            id="palette-tab-1"
+            role="tab"
+            aria-selected="true"
+            aria-controls="palette-page-1"
+          >
+            1-5
+          </button>
+          <button
+            type="button"
+            class="palette-tab-btn"
+            id="palette-tab-2"
+            role="tab"
+            aria-selected="false"
+            aria-controls="palette-page-2"
+          >
+            6-10
+          </button>
+        </div>
+      </div>
+
+      <table class="component-table" aria-label="Drag and drop wireframe components">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Component (Drag to Canvas)</th>
+          </tr>
+        </thead>
+        <tbody id="palette-page-1" class="palette-page" role="tabpanel" aria-labelledby="palette-tab-1"></tbody>
+        <tbody id="palette-page-2" class="palette-page" role="tabpanel" aria-labelledby="palette-tab-2" hidden></tbody>
+      </table>
+
+      <div class="panel-title canvas-header">
+        <span>Canvas (375px for Mobile-first)</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearCanvasBtn">Clear</button>
+          <button type="button" class="btn-sm" id="loadWireframeHtmlBtn">Load to HTML</button>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div id="canvas" aria-label="Wireframe Drop Canvas"></div>
+      </div>
+    </section>
+
+    <!-- Middle Column: HTML / CSS / JS Editors -->
+    <section class="panel code-editor-panel">
+      <div class="panel-title">
+        <span>HTML</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="syncFromCanvasBtn">From Canvas</button>
+          <button type="button" class="secondary btn-sm" id="clearHtmlBtn">Clear</button>
+        </div>
+      </div>
+      <textarea
+        id="html-input"
+        spellcheck="false"
+        placeholder="<button class='wf-btn-primary'>Click me</button>"
+      ></textarea>
+
+      <div class="panel-title">
+        <span>CSS</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="loadTokenCssBtn">+ Design Tokens</button>
+          <button type="button" class="secondary btn-sm" id="clearCssBtn">Clear</button>
+        </div>
+      </div>
+      <textarea
+        id="css-input"
+        spellcheck="false"
+        placeholder="h1 { color: var(--color-brand-700); }"
+      ></textarea>
+
+      <div class="panel-title">
+        <span>JavaScript</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearJsBtn">Clear</button>
+        </div>
+      </div>
+      <textarea
+        id="js-input"
+        spellcheck="false"
+        placeholder="document.querySelector('button')?.addEventListener('click', () => alert('Clicked'));"
+      ></textarea>
+    </section>
+
+    <!-- Right Column: Sandboxed Live Output Frame -->
+    <section class="panel preview-panel">
+      <div class="panel-title">
+        <span>Preview</span>
+        <div class="inline-actions">
+          <button type="button" class="secondary btn-sm" id="clearPreviewBtn">Clear Preview</button>
+          <button type="button" class="secondary btn-sm" id="exportBundleBtn">Copy HTML</button>
+        </div>
+      </div>
+      <iframe id="results-output" title="Live Code Preview" sandbox="allow-scripts"></iframe>
+    </section>
+  </main>
+
+  <script src="./tokens.js" defer></script>
+  <script src="./builder.js" defer></script>
+  <script src="./runner.js" defer></script>
+  <script src="./studio.js" defer></script>
+</body>
+</html>
